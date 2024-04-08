@@ -1,5 +1,13 @@
 # Distributed File System (DFS)
 
+# Integrantes del equipo
+
+- Fidel Fernando Caicedo Castaño
+
+- Sebastian Velez Galeano 
+
+- Juan Andres Henao Diaz
+
 ## Introduction
 Este proyecto implementa una versión básica de un sistema de archivos distribuido (DFS) usando gRPC en Python. El sistema está diseñado para almacenar archivos en múltiples nodos de datos mientras administra los metadatos de los archivos a través de un solo nameNode. Permite a los usuarios cargar, descargar, buscar y listar archivos dentro del sistema distribuido.
 
@@ -124,16 +132,6 @@ Esta opcion es la mas simple pero igual de importante que las anteriores ya que 
 # arquitectura de referencia 
 
 - imagen de referencia 
-
-
-# Integrantes del equipo
-
-- Fidel Fernando Caicedo Castaño
-
-- Sebastian Velez Galeano 
-
-- Juan Andres Henao Diaz
-
 
 
         
