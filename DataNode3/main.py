@@ -18,13 +18,14 @@ import dfs_pb2
 HEARTBEAT_INTERVAL = 10
 
 def listFiles():
-    files = [f for f in listdir("src/") if isfile(join("src/", f))]
+    files = [f for f in listdir("files/") if isfile(join("files/", f))]
     return files
 
 class Files(dfs_pb2_grpc.dfsServicer):
-    def PingFiles(self, request, context):
-        response = dfs_pb2.PingFilesResponse(ack='1')
-        return response
+    def __init__(self, namenode, datanode3):
+        self.namenode = namenode
+        self.datanode3 = datanode3
+
     def ListFiles(self, request, context):
         try:
             files = listFiles()
@@ -33,24 +34,24 @@ class Files(dfs_pb2_grpc.dfsServicer):
         except:
             response = dfs_pb2.ListFilesResponse(status=500)
         return response
+
     def DownloadFile(self, request, context):
-        chunk_size = 1024
-        print("Download Request")
-        filepath = "src/"+request.fileName
-        if os.path.exists(filepath):
-            print("Sending: "+filepath)
-            with open(filepath, mode="rb") as f:
+        file_path = os.path.join('files', request.fileName)
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as file:
                 while True:
-                    chunk = f.read(chunk_size)
-                    if chunk:
-                        entry_response = dfs_pb2.DownloadFileResponse(chunk_data=chunk)
-                        yield entry_response
-                    else:
-                        return
+                    chunk_data = file.read(1024) 
+                    if not chunk_data:
+                        break
+                    yield dfs_pb2.DownloadFileResponse(chunk_data=chunk_data)
+        else:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details('File not found')
+
     
     def UploadFile(self, request_iterator, context):
         data = bytearray()
-        filepath = 'src/'
+        filepath = 'files/'
         print("UPLOAD Request")
 
         for request in request_iterator:
@@ -62,57 +63,52 @@ class Files(dfs_pb2_grpc.dfsServicer):
         with open(filepath, 'wb') as f:
             f.write(data)
         
-        namenode = os.getenv("namenode")
-        datanode3 = os.getenv("datanode3")
-        with grpc.insecure_channel(namenode) as chan:
+        with grpc.insecure_channel(self.namenode) as chan:
             stub = dfs_pb2_grpc.dfsStub(chan)
-            request = dfs_pb2.NameNodeRequest(conn=datanode3,files=listFiles())
-            response = stub.NamenodeConn(request)
+            request = dfs_pb2.NameNodeRequest(conn=self.datanode3,files=listFiles())
+            response = stub.NameNodeConnection(request)
             if response.status == 200:
                 print("Namenode success!")
         
         return dfs_pb2.EmptyMessage()
 
-def send_heartbeat(namenode, datanode3):
+def sendHeartbeat(namenode, datanode3):
     with grpc.insecure_channel(namenode) as chan:
         stub = dfs_pb2_grpc.dfsStub(chan)
         while True:
             try:
                 request = dfs_pb2.NameNodeRequest(conn=datanode3, files=listFiles())
-                stub.NamenodeConn(request)
+                stub.NameNodeConnection(request)
                 print("Heartbeat sent")
             except Exception as e:
                 print(f"Failed to send heartbeat: {e}")
             time.sleep(HEARTBEAT_INTERVAL)
 
-def createServer():
-    namenode = os.getenv("namenode")
+def createServer(namenode, datanode3):
     print("namenode", namenode)
-    datanode3 = os.getenv("datanode3")
     with grpc.insecure_channel(namenode) as chan:
         stub = dfs_pb2_grpc.dfsStub(chan)
         request = dfs_pb2.NameNodeRequest(conn=datanode3,files=listFiles())
-        response = stub.NamenodeConn(request)
+        response = stub.NameNodeConnection(request)
         if response.status == 200:
             print("Namenode success!")
-
     server = grpc.server(futures.ThreadPoolExecutor())
-
-    dfs_pb2_grpc.add_dfsServicer_to_server(Files(),server)
-
-    port = 50053
+    dfs_pb2_grpc.add_dfsServicer_to_server(Files(namenode, datanode3),server)
+    port = 80083
     server.add_insecure_port('[::]:'+str(port))
     server.start()
-    print("server started, port: "+str(port))
+    print("DataNode server started, port: "+str(port))
 
-    heartbeat_thread = Thread(target=send_heartbeat, args=(namenode, datanode3), daemon=True)
+    heartbeat_thread = Thread(target=sendHeartbeat, args=(namenode, datanode3), daemon=True)
     heartbeat_thread.start()
 
     server.wait_for_termination()
 
 def main():
     load_dotenv()
-    createServer()    
+    namenode = os.getenv("namenode")
+    datanode3 = os.getenv("datanode3")
+    createServer(namenode, datanode3)    
 
 if __name__ == "__main__":
     main()

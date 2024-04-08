@@ -7,9 +7,9 @@ service dfs {
     rpc ListFiles(EmptyMessage) returns (ListFilesResponse);
     rpc DownloadFile(DownloadFileRequest) returns (stream DownloadFileResponse);
     rpc UploadFile(stream UploadFileRequest) returns (EmptyMessage);
-    rpc NamenodeConn(NameNodeRequest) returns (StatusMessage);
-    rpc NamenodeDownloadFile(DownloadFileRequest) returns (DataNodeResponse);
-    rpc NamenodeUploadFile(EmptyMessage) returns (DataNodeResponse);
+    rpc NameNodeConnection(NameNodeRequest) returns (StatusMessage);
+    rpc NameNodeDownload(DownloadFileRequest) returns (DataNodeResponse);
+    rpc NameNodeUpload(EmptyMessage) returns (DataNodeResponse);
     rpc FindFile(FindFileRequest) returns (FindFileResponse);
 }
 

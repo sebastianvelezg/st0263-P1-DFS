@@ -34,18 +34,18 @@ class dfsStub(object):
                 request_serializer=dfs__pb2.UploadFileRequest.SerializeToString,
                 response_deserializer=dfs__pb2.EmptyMessage.FromString,
                 )
-        self.NamenodeConn = channel.unary_unary(
-                '/files.dfs/NamenodeConn',
+        self.NameNodeConnection = channel.unary_unary(
+                '/files.dfs/NameNodeConnection',
                 request_serializer=dfs__pb2.NameNodeRequest.SerializeToString,
                 response_deserializer=dfs__pb2.StatusMessage.FromString,
                 )
-        self.NamenodeDownloadFile = channel.unary_unary(
-                '/files.dfs/NamenodeDownloadFile',
+        self.NameNodeDownload = channel.unary_unary(
+                '/files.dfs/NameNodeDownload',
                 request_serializer=dfs__pb2.DownloadFileRequest.SerializeToString,
                 response_deserializer=dfs__pb2.DataNodeResponse.FromString,
                 )
-        self.NamenodeUploadFile = channel.unary_unary(
-                '/files.dfs/NamenodeUploadFile',
+        self.NameNodeUpload = channel.unary_unary(
+                '/files.dfs/NameNodeUpload',
                 request_serializer=dfs__pb2.EmptyMessage.SerializeToString,
                 response_deserializer=dfs__pb2.DataNodeResponse.FromString,
                 )
@@ -83,19 +83,19 @@ class dfsServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def NamenodeConn(self, request, context):
+    def NameNodeConnection(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def NamenodeDownloadFile(self, request, context):
+    def NameNodeDownload(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def NamenodeUploadFile(self, request, context):
+    def NameNodeUpload(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -130,18 +130,18 @@ def add_dfsServicer_to_server(servicer, server):
                     request_deserializer=dfs__pb2.UploadFileRequest.FromString,
                     response_serializer=dfs__pb2.EmptyMessage.SerializeToString,
             ),
-            'NamenodeConn': grpc.unary_unary_rpc_method_handler(
-                    servicer.NamenodeConn,
+            'NameNodeConnection': grpc.unary_unary_rpc_method_handler(
+                    servicer.NameNodeConnection,
                     request_deserializer=dfs__pb2.NameNodeRequest.FromString,
                     response_serializer=dfs__pb2.StatusMessage.SerializeToString,
             ),
-            'NamenodeDownloadFile': grpc.unary_unary_rpc_method_handler(
-                    servicer.NamenodeDownloadFile,
+            'NameNodeDownload': grpc.unary_unary_rpc_method_handler(
+                    servicer.NameNodeDownload,
                     request_deserializer=dfs__pb2.DownloadFileRequest.FromString,
                     response_serializer=dfs__pb2.DataNodeResponse.SerializeToString,
             ),
-            'NamenodeUploadFile': grpc.unary_unary_rpc_method_handler(
-                    servicer.NamenodeUploadFile,
+            'NameNodeUpload': grpc.unary_unary_rpc_method_handler(
+                    servicer.NameNodeUpload,
                     request_deserializer=dfs__pb2.EmptyMessage.FromString,
                     response_serializer=dfs__pb2.DataNodeResponse.SerializeToString,
             ),
@@ -229,7 +229,7 @@ class dfs(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def NamenodeConn(request,
+    def NameNodeConnection(request,
             target,
             options=(),
             channel_credentials=None,
@@ -239,14 +239,14 @@ class dfs(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/files.dfs/NamenodeConn',
+        return grpc.experimental.unary_unary(request, target, '/files.dfs/NameNodeConnection',
             dfs__pb2.NameNodeRequest.SerializeToString,
             dfs__pb2.StatusMessage.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def NamenodeDownloadFile(request,
+    def NameNodeDownload(request,
             target,
             options=(),
             channel_credentials=None,
@@ -256,14 +256,14 @@ class dfs(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/files.dfs/NamenodeDownloadFile',
+        return grpc.experimental.unary_unary(request, target, '/files.dfs/NameNodeDownload',
             dfs__pb2.DownloadFileRequest.SerializeToString,
             dfs__pb2.DataNodeResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def NamenodeUploadFile(request,
+    def NameNodeUpload(request,
             target,
             options=(),
             channel_credentials=None,
@@ -273,7 +273,7 @@ class dfs(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/files.dfs/NamenodeUploadFile',
+        return grpc.experimental.unary_unary(request, target, '/files.dfs/NameNodeUpload',
             dfs__pb2.EmptyMessage.SerializeToString,
             dfs__pb2.DataNodeResponse.FromString,
             options, channel_credentials,
